@@ -1,13 +1,29 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/ariyn/calculator"
-	"log"
+	"os"
 	"sort"
 )
 
 func main() {
-	elements := calculator.ParseString("1 + 2 * 3")
+	r := bufio.NewReader(os.Stdin)
+
+	for {
+		line, _, err := r.ReadLine()
+		if err != nil {
+			break
+		}
+
+		result := parse(string(line))
+		fmt.Println(fmt.Sprintf("%s = %s", string(line), result.String()))
+	}
+}
+
+func parse(line string) calculator.Operand {
+	elements := calculator.ParseString(line)
 	for i := 0; i < len(elements); i++ {
 		e := elements[i]
 		if e.Type() == calculator.TypeOperator {
@@ -22,8 +38,8 @@ func main() {
 		}
 	}
 
-	// TODO: error handling
-	log.Println(elements[0])
+	//TODO: error handling
+	return elements[0].(calculator.Operand)
 }
 
 func remove(elements []calculator.Element, indexes ...int) []calculator.Element {
