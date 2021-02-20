@@ -35,12 +35,15 @@ func ParseString(v string) (elements []Element) {
 		r := v[i]
 		if IsOperand(rune(r)) {
 			previous += string(r)
-			continue
 		} else if IsOperator(rune(r)) {
 			appendOperandToElements(&elements, previous)
 			previous = ""
 			appendToOperators(&operators, string(r))
-			continue
+
+			if compareOperators(operators) {
+				o := popFromOperators(&operators, len(operators)-2)
+				appendOperatorToElements(&elements, o)
+			}
 		}
 	}
 
@@ -75,4 +78,19 @@ func appendToOperators(operators *[]Operator, value string) {
 	}
 
 	*operators = append(*operators, o)
+}
+
+func popFromOperators(operators *[]Operator, index int) Operator {
+	o := (*operators)[index]
+	*operators = append((*operators)[:index], (*operators)[index+1:]...)
+	return o
+}
+
+func compareOperators(operators []Operator) bool {
+	length := len(operators)
+	if length < 2 {
+		return false
+	}
+
+	return operators[length-2].Priority() > operators[length-1].Priority()
 }
