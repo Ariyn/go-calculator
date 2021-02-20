@@ -99,7 +99,10 @@ func (o Operand) Type() string {
 }
 
 func (o Operand) String() string {
-	return fmt.Sprintf("%d", o.Int())
+	if int(o.Float() * 100)%100 == 0 {
+		return fmt.Sprintf("%d", o.Int())
+	}
+	return fmt.Sprintf("%0.1f", o.Float())
 }
 
 func (o Operand) Float() float64 {
